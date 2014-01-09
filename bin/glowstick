@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+from glowstick.hdhomerun import get_devices
+
+if __name__ == "__main__":
+    devices = get_devices()
+    print(devices)
+
+    if devices:
+        devices[0].get(b"/sys/features")
