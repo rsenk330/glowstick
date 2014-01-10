@@ -2,7 +2,8 @@ from ctypes import c_char_p, pointer
 from types import MethodType
 
 from . import utils
-from . import wrapper
+from . import lib
+from .constants import HDHOMERUN_DEVICE_ID_WILDCARD, HDHOMERUN_DEVICE_TYPE_TUNER
 from .exceptions import DeviceError, HomeRunError, NoDeviceError
 
 
@@ -15,7 +16,7 @@ class HDHomeRunLibrary:
     """
 
     def __getattr__(self, name):
-        attr = getattr(wrapper, name)
+        attr = getattr(lib, name)
         if attr:
             if type(attr) == MethodType:
                 return lambda *args, **kwargs: attr(*args, **kwargs)
@@ -73,6 +74,29 @@ class Device(object):
             self._ip >> 4 & 0x0FF,
         )
 
+    @property
+    def copyright(self):
+        return self.get(b"/sys/copyright")
+
+    @property
+    def features(self):
+        return self.get(b"/sys/features")
+
+    @property
+    def hwmodel(self):
+        return self.get(b"/sys/hwmodel")
+
+    @property
+    def model(self):
+        return self.get(b"/sys/model")
+
+    @property
+    def version(self):
+        return self.get(b"/sys/version")
+
+    def get_tuner(self):
+        return HDHOMERUN_LIB.hdhomerun_device_get_tuner(self._hd)
+
     def get(self, key):
         ret_value = pointer(c_char_p())
         ret_error = pointer(c_char_p())
@@ -92,11 +116,7 @@ def get_devices():
     """
     results = (HDHOMERUN_LIB.hdhomerun_discover_device_t * 64)()
     devices_found = HDHOMERUN_LIB.hdhomerun_discover_find_devices_custom(
-        0,
-        HDHOMERUN_LIB.HDHOMERUN_DEVICE_TYPE_TUNER,
-        HDHOMERUN_LIB.HDHOMERUN_DEVICE_ID_WILDCARD,
-        results,
-        64
+        0, HDHOMERUN_DEVICE_TYPE_TUNER, HDHOMERUN_DEVICE_ID_WILDCARD, results, 64
     )
 
     if devices_found < 0:

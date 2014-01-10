@@ -6,4 +6,6 @@ if __name__ == "__main__":
     print(devices)
 
     if devices:
-        devices[0].get(b"/sys/features")
+        devices[0].features
+        devices[0].copyright
+        devices[0].hwmodel
