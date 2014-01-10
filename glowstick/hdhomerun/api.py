@@ -1,6 +1,6 @@
 import six
 
-from ctypes import c_char_p, pointer
+from ctypes import byref, c_char_p
 from ipaddress import IPv4Address
 from types import MethodType
 
@@ -32,7 +32,16 @@ class HDHomeRunLibrary:
 HDHOMERUN_LIB = HDHomeRunLibrary()
 
 
-class Device(object):
+class Tuner:
+    def __init__(self, device, tuner_num):
+        self._device = device
+        self.tuner_num = tuner_num
+
+    def __repr__(self):
+        return "<{} {}>".format(self.__class__.__name__, self.tuner_num)
+
+
+class Device:
     def __init__(self, device_id=0, device_ip=0):
         if device_id == 0 and device_ip == 0:
             raise ValueError("You must provide either a device_id or device_ip")
@@ -70,6 +79,7 @@ class Device(object):
         self._ip = HDHOMERUN_LIB.hdhomerun_device_get_device_ip(hd)
         self._hd = hd
         self._discover_hd = discover_hd
+        self.tuners = tuple(Tuner(hd, t + 1) for t in range(discover_hd.tuner_count))
 
     def __repr__(self):
         return "<{} {} at {}>".format(self.__class__.__name__, self.id, self.ip)
@@ -109,15 +119,21 @@ class Device(object):
     def get_tuner(self):
         return HDHOMERUN_LIB.hdhomerun_device_get_tuner(self._hd)
 
+    def get_lineup(self):
+        location = c_char_p()
+        HDHOMERUN_LIB.hdhomerun_device_get_lineup_location(self._hd, byref(location))
+
+        return location.value.decode("utf-8")
+
     def get(self, key):
-        ret_value = pointer(c_char_p())
-        ret_error = pointer(c_char_p())
+        ret_value = c_char_p()
+        ret_error = c_char_p()
         HDHOMERUN_LIB.hdhomerun_device_get_var(self._hd, key, ret_value, ret_error)
 
-        if ret_error.contents:
-            raise DeviceError(ret_error.contents.value.decode("utf-8"))
+        if ret_error.value:
+            raise DeviceError(ret_error.value.decode("utf-8"))
 
-        return ret_value.contents.value.decode("utf-8")
+        return ret_value.value.decode("utf-8")
 
 
 def get_devices():
