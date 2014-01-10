@@ -1,10 +1,13 @@
+import six
+
 from ctypes import c_char_p, pointer
+from ipaddress import IPv4Address
 from types import MethodType
 
-from . import utils
 from . import lib
-from .constants import HDHOMERUN_DEVICE_ID_WILDCARD, HDHOMERUN_DEVICE_TYPE_TUNER
+from .constants import HDHOMERUN_DEVICE_ID_WILDCARD, HDHOMERUN_DEVICE_TYPE_TUNER, HDHOMERUN_DEVICE_TYPE_WILDCARD
 from .exceptions import DeviceError, HomeRunError, NoDeviceError
+from .structs import hdhomerun_discover_device_t
 
 
 class HDHomeRunLibrary:
@@ -30,14 +33,27 @@ HDHOMERUN_LIB = HDHomeRunLibrary()
 
 
 class Device(object):
-    def __init__(self, device_id):
-        if type(device_id) == str:
-            # convert into bytes()
-            device_id = device_id.encode("utf-8")
-        hd = HDHOMERUN_LIB.hdhomerun_device_create_from_str(device_id, None)
+    def __init__(self, device_id=0, device_ip=0):
+        if device_id == 0 and device_ip == 0:
+            raise ValueError("You must provide either a device_id or device_ip")
 
+        if device_ip != 0:
+            device_ip = IPv4Address(device_ip)
+            if device_ip.is_multicast:
+                raise ValueError("Cannot use multicast ip address for device operations")
+
+        if isinstance(device_id, six.string_types):
+            device_id = int(device_id, 16)
+        device_id_str = "{:8X}".format(device_id).encode("utf-8")
+
+        discover_hd = hdhomerun_discover_device_t()
+        found = HDHOMERUN_LIB.hdhomerun_discover_find_devices_custom(int(device_ip), HDHOMERUN_DEVICE_TYPE_WILDCARD, int(device_id), discover_hd, 1)
+        if found <= 0:
+            raise NoDeviceError("No device found: {}".format(device_id_str))
+
+        hd = HDHOMERUN_LIB.hdhomerun_device_create_from_str(device_id_str, None)
         if not hd:
-            raise DeviceError("Invalid device id {}.".format(device_id))
+            raise DeviceError("Invalid device id {}.".format(device_id_str))
 
         # Device ID check
         device_id_requested = HDHOMERUN_LIB.hdhomerun_device_get_device_id_requested(hd)
@@ -53,26 +69,18 @@ class Device(object):
         self._id = device_id_requested
         self._ip = HDHOMERUN_LIB.hdhomerun_device_get_device_ip(hd)
         self._hd = hd
-
-    @staticmethod
-    def from_discover_device(discover_device):
-        return Device(utils.device_id_to_str(discover_device.device_id))
+        self._discover_hd = discover_hd
 
     def __repr__(self):
         return "<{} {} at {}>".format(self.__class__.__name__, self.id, self.ip)
 
     @property
     def id(self):
-        return utils.device_id_to_str(self._id)
+        return "{:8X}".format(self._id)
 
     @property
     def ip(self):
-        return "{:d}.{:d}.{:d}.{:d}".format(
-            self._ip >> 24 & 0x0FF,
-            self._ip >> 16 & 0x0FF,
-            self._ip >> 8 & 0x0FF,
-            self._ip >> 4 & 0x0FF,
-        )
+        return str(IPv4Address(self._discover_hd.ip_addr))
 
     @property
     def copyright(self):
@@ -91,6 +99,10 @@ class Device(object):
         return self.get(b"/sys/model")
 
     @property
+    def tuner_count(self):
+        return self._discover_hd.tuner_count
+
+    @property
     def version(self):
         return self.get(b"/sys/version")
 
@@ -103,9 +115,9 @@ class Device(object):
         HDHOMERUN_LIB.hdhomerun_device_get_var(self._hd, key, ret_value, ret_error)
 
         if ret_error.contents:
-            print(ret_error.contents.value.decode("utf-8"))
+            raise DeviceError(ret_error.contents.value.decode("utf-8"))
 
-        print(ret_value.contents.value.decode("utf-8"))
+        return ret_value.contents.value.decode("utf-8")
 
 
 def get_devices():
@@ -124,4 +136,4 @@ def get_devices():
     elif devices_found == 0:
         raise NoDeviceError("No devices could be found")
 
-    return [Device.from_discover_device(d) for i, d in enumerate(results) if i < devices_found]
+    return [Device(device_id=d.device_id) for i, d in enumerate(results) if i < devices_found]

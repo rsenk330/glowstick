@@ -6,6 +6,7 @@ if __name__ == "__main__":
     print(devices)
 
     if devices:
-        devices[0].features
-        devices[0].copyright
-        devices[0].hwmodel
+        print(devices[0].features)
+        print(devices[0].copyright)
+        print(devices[0].hwmodel)
+        print("Tuners: {}".format(devices[0].tuner_count))
