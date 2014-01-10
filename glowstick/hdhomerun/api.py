@@ -1,13 +1,13 @@
-import inspect
-
 from ctypes import c_char_p, pointer
+from types import MethodType
 
 from . import utils
 from . import wrapper
+from .exceptions import DeviceError, HomeRunError, NoDeviceError
 
 
 class HDHomeRunLibrary:
-    """Calls any known functions.
+    """Calls any known functions from libhdhomerun.
 
         lib = HDHomeRunLibrary()
         lib.hdhomerun_device_get_device_ip(hd)
@@ -17,7 +17,7 @@ class HDHomeRunLibrary:
     def __getattr__(self, name):
         attr = getattr(wrapper, name)
         if attr:
-            if hasattr(attr, "__call__") and not inspect.isclass(attr):
+            if type(attr) == MethodType:
                 return lambda *args, **kwargs: attr(*args, **kwargs)
             else:
                 return attr
@@ -36,18 +36,18 @@ class Device(object):
         hd = HDHOMERUN_LIB.hdhomerun_device_create_from_str(device_id, None)
 
         if not hd:
-            raise Exception("Invalid device id {}.".format(device_id))
+            raise DeviceError("Invalid device id {}.".format(device_id))
 
         # Device ID check
         device_id_requested = HDHOMERUN_LIB.hdhomerun_device_get_device_id_requested(hd)
         if not HDHOMERUN_LIB.hdhomerun_discover_validate_device_id(device_id_requested):
-            raise Exception("Invalid device id: {}".format(device_id_requested))
+            raise DeviceError("Invalid device id: {}".format(device_id_requested))
 
         # Connect to device and check model
         model = HDHOMERUN_LIB.hdhomerun_device_get_model_str(hd)
         if not model:
             HDHOMERUN_LIB.hdhomerun_device_destroy(hd)
-            raise Exception("Unable to connect to device")
+            raise DeviceError("Unable to connect to device")
 
         self._id = device_id_requested
         self._ip = HDHOMERUN_LIB.hdhomerun_device_get_device_ip(hd)
@@ -85,6 +85,11 @@ class Device(object):
 
 
 def get_devices():
+    """Gets a list of devices on the network.
+
+    :returns: A list of hdhomerun devices
+
+    """
     results = (HDHOMERUN_LIB.hdhomerun_discover_device_t * 64)()
     devices_found = HDHOMERUN_LIB.hdhomerun_discover_find_devices_custom(
         0,
@@ -95,10 +100,8 @@ def get_devices():
     )
 
     if devices_found < 0:
-        print("Error discovering devices")
-        return []
+        raise HomeRunError("Error discovering devices")
     elif devices_found == 0:
-        print("No devices found")
-        return []
+        raise NoDeviceError("No devices could be found")
 
     return [Device.from_discover_device(d) for i, d in enumerate(results) if i < devices_found]
