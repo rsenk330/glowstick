@@ -4,6 +4,4 @@ python:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq libhdhomerun-dev
-install:
-  - python setup.py develop
 script: py.test
