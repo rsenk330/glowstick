@@ -1,5 +1,3 @@
-import six
-
 from ctypes import byref, c_char_p
 from ipaddress import IPv4Address
 from types import MethodType
@@ -17,7 +15,6 @@ class HDHomeRunLibrary:
         lib.hdhomerun_device_get_device_ip(hd)
 
     """
-
     def __getattr__(self, name):
         attr = getattr(lib, name)
         if attr:
@@ -26,7 +23,7 @@ class HDHomeRunLibrary:
             else:
                 return attr
 
-        return super().__getattr(name)
+        return super().__getattr__(name)
 
 
 HDHOMERUN_LIB = HDHomeRunLibrary()
@@ -51,7 +48,7 @@ class Device:
             if device_ip.is_multicast:
                 raise ValueError("Cannot use multicast ip address for device operations")
 
-        if isinstance(device_id, six.string_types):
+        if isinstance(device_id, (str, bytes)):
             device_id = int(device_id, 16)
         device_id_str = "{:8X}".format(device_id).encode("utf-8")
 
@@ -76,7 +73,7 @@ class Device:
             raise DeviceError("Unable to connect to device")
 
         self._id = device_id_requested
-        self._ip = HDHOMERUN_LIB.hdhomerun_device_get_device_ip(hd)
+        self._ip = discover_hd.ip_addr
         self._hd = hd
         self._discover_hd = discover_hd
         self.tuners = tuple(Tuner(hd, t + 1) for t in range(discover_hd.tuner_count))
@@ -90,7 +87,7 @@ class Device:
 
     @property
     def ip(self):
-        return str(IPv4Address(self._discover_hd.ip_addr))
+        return str(IPv4Address(self._ip))
 
     @property
     def copyright(self):

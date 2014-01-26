@@ -25,6 +25,7 @@ with open("README.md", 'r') as readme_file:
     readme = readme_file.read()
 
 install_reqs = parse_requirements('requirements.txt')
+requirements = [str(ir.req) for ir in install_reqs if ir.req is not None]
 
 setup(
     name='glowstick',
@@ -37,7 +38,7 @@ setup(
     zip_safe=False,
     include_package_data=True,
     platforms='any',
-    install_requires=[str(ir.req) for ir in install_reqs if ir.req is not None],
+    install_requires=requirements,
     scripts=["bin/glowstick"],
     classifiers=[
         'Operating System :: OS Independent',
