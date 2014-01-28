@@ -25,6 +25,7 @@ def discover_device_mock(request):
     discover_device_mock = mock.Mock()
     discover_device_mock.tuner_count = 2
     discover_device_mock.ip_addr = 2130706433
+    discover_device_mock.device_id = 0x12345
     hdhomerun_discover_device_t.return_value = discover_device_mock
 
     return discover_device_mock
@@ -220,3 +221,36 @@ def test_device_get_invalid(device, hdhomerun_lib):
             device.get(b"/sys/copyright")
 
         hdhomerun_lib.hdhomerun_device_get_var.assert_called_once_with(device._hd, b"/sys/copyright", instance, instance)
+
+
+def test_get_devices(hdhomerun_lib, discover_device_mock):
+    from glowstick.hdhomerun.api import get_devices
+    hdhomerun_lib.hdhomerun_discover_find_devices_custom.return_value = 1
+    hdhomerun_lib.hdhomerun_discover_device_t.__mul__.return_value = mock.Mock(return_value=[discover_device_mock])
+
+    devices = get_devices()
+
+    assert hdhomerun_lib.hdhomerun_discover_find_devices_custom.call_count == 2  # Device __init__ calls it once, too
+    assert len(devices) == 1
+    assert devices[0]._id == 0x12345
+    assert devices[0]._ip == 2130706433
+
+
+def test_get_devices_none_found(hdhomerun_lib):
+    from glowstick.hdhomerun.api import get_devices
+    from glowstick.hdhomerun.exceptions import NoDeviceError
+    hdhomerun_lib.hdhomerun_discover_find_devices_custom.return_value = 0
+
+    with pytest.raises(NoDeviceError):
+        devices = get_devices()
+        assert devices == 0
+
+
+def test_get_devices_error(discover_device_mock, hdhomerun_lib):
+    from glowstick.hdhomerun.api import get_devices
+    from glowstick.hdhomerun.exceptions import HomeRunError
+    hdhomerun_lib.hdhomerun_discover_find_devices_custom.return_value = -1
+
+    with pytest.raises(HomeRunError):
+        devices = get_devices()
+        assert devices == -1
