@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Glowstick by rsenk330</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Glowstick</h1>
+        <p class="header">Web application for controlling SiliconDust hdhomerun devices.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/rsenk330/glowstick/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/rsenk330/glowstick/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/rsenk330/glowstick">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/rsenk330">rsenk330</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="glowstick" class="anchor" href="#glowstick"><span class="octicon octicon-link"></span></a>glowstick</h1>
+
+<p><a href="https://travis-ci.org/rsenk330/glowstick"><img src="https://travis-ci.org/rsenk330/glowstick.png?branch=master" alt="Build Status"></a></p>
+
+<p>Glowstick is a web application that controls <a href="http://www.silicondust.com/">hdhomerun</a> devices.</p>
+
+<p>Python &gt;= 3.3 is required.</p>
+
+<h2>
+<a name="development" class="anchor" href="#development"><span class="octicon octicon-link"></span></a>Development</h2>
+
+<p>All python dependencies are defined in the requirements.txt file. Simply use pip to install them.</p>
+
+<p>Note: A virtualenv is highly recommended.</p>
+
+<div class="highlight highlight-sh"><pre><span class="nv">$ </span>mkvirtualenv -p python3 glowstick
+<span class="nv">$ </span>pip install -r requirements-devel.txt
+</pre></div>
+
+<h3>
+<a name="build-requirements" class="anchor" href="#build-requirements"><span class="octicon octicon-link"></span></a>Build Requirements</h3>
+
+<p>There are a few extra dependencies from npm:</p>
+
+<ul>
+<li>less</li>
+<li>autoprefixer</li>
+</ul><div class="highlight highlight-sh"><pre><span class="nv">$ </span>npm install -g less autoprefixer
+</pre></div>
+
+<h3>
+<a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h3>
+
+<p><a href="http://tox.readthedocs.org/en/latest/">tox</a> is used to help automate the testing on various
+versions of python (for now, only Python 3.3). To run the tests, simply run:</p>
+
+<div class="highlight highlight-sh"><pre><span class="nv">$ </span>tox
+</pre></div>
+
+<h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<ol>
+<li><a href="https://help.github.com/articles/fork-a-repo">Fork it!</a></li>
+<li>Create your feature branch (<code>git checkout -b my-new-formula</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Added some formula'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-formula</code>)</li>
+</ol>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
