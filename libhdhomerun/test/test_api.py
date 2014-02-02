@@ -1,12 +1,12 @@
 import pytest
 from unittest import mock
 
-from glowstick.hdhomerun import lib as HOMERUN_LIB
+from libhdhomerun import lib as HOMERUN_LIB
 
 
 @pytest.fixture
 def lib():
-    from glowstick.hdhomerun import api
+    from libhdhomerun import api
     return api.HDHomeRunLibrary()
 
 
@@ -17,7 +17,7 @@ def device_mock():
 
 @pytest.fixture
 def discover_device_mock(request):
-    patcher = mock.patch("glowstick.hdhomerun.api.hdhomerun_discover_device_t")
+    patcher = mock.patch("libhdhomerun.api.hdhomerun_discover_device_t")
     hdhomerun_discover_device_t = patcher.start()
 
     request.addfinalizer(lambda: patcher.stop())
@@ -33,7 +33,7 @@ def discover_device_mock(request):
 
 @pytest.fixture
 def hdhomerun_lib(request, device_mock):
-    patcher = mock.patch("glowstick.hdhomerun.api.HDHOMERUN_LIB")
+    patcher = mock.patch("libhdhomerun.api.HDHOMERUN_LIB")
     hdhomerun_lib = patcher.start()
 
     hdhomerun_lib.hdhomerun_discover_find_devices_custom.return_value = 1
@@ -53,13 +53,13 @@ def hdhomerun_lib(request, device_mock):
 
 @pytest.fixture
 def device(device_mock, discover_device_mock, hdhomerun_lib):
-    from glowstick.hdhomerun.api import Device
+    from libhdhomerun.api import Device
     return Device(device_ip="127.0.0.1")
 
 
 @pytest.fixture
 def device_mocked_get(request, device, device_mock, discover_device_mock, hdhomerun_lib):
-    patcher = mock.patch("glowstick.hdhomerun.api.Device.get")
+    patcher = mock.patch("libhdhomerun.api.Device.get")
     get = patcher.start()
     get.return_value = "Test get() return value"
 
@@ -89,8 +89,8 @@ def test_hdhomerunlibrary_getattr_valid_instance_variable(lib):
 
 
 def test_device_create_device_id_int(device_mock, discover_device_mock, hdhomerun_lib):
-    from glowstick.hdhomerun import constants
-    from glowstick.hdhomerun.api import Device
+    from libhdhomerun import constants
+    from libhdhomerun.api import Device
 
     Device(device_id=74565)
 
@@ -105,8 +105,8 @@ def test_device_create_device_id_int(device_mock, discover_device_mock, hdhomeru
 
 
 def test_device_create_device_ip_int(device_mock, discover_device_mock, hdhomerun_lib):
-    from glowstick.hdhomerun import constants
-    from glowstick.hdhomerun.api import Device
+    from libhdhomerun import constants
+    from libhdhomerun.api import Device
 
     Device(device_ip=2130706433)
 
@@ -121,8 +121,8 @@ def test_device_create_device_ip_int(device_mock, discover_device_mock, hdhomeru
 
 
 def test_device_create_device_ip_str(device_mock, discover_device_mock, hdhomerun_lib):
-    from glowstick.hdhomerun import constants
-    from glowstick.hdhomerun.api import Device
+    from libhdhomerun import constants
+    from libhdhomerun.api import Device
 
     Device(device_ip="127.0.0.1")
 
@@ -137,7 +137,7 @@ def test_device_create_device_ip_str(device_mock, discover_device_mock, hdhomeru
 
 
 def test_device_create_device_ip_multicast(device_mock, discover_device_mock, hdhomerun_lib):
-    from glowstick.hdhomerun.api import Device
+    from libhdhomerun.api import Device
 
     with pytest.raises(ValueError):
         Device(device_ip=3758096385)  # 224.0.0.1
@@ -186,8 +186,8 @@ def test_device_get_tuner(device, hdhomerun_lib):
     assert resp == "Test get_tuner() return value"
 
 
-@mock.patch("glowstick.hdhomerun.api.byref")
-@mock.patch("glowstick.hdhomerun.api.c_char_p")
+@mock.patch("libhdhomerun.api.byref")
+@mock.patch("libhdhomerun.api.c_char_p")
 def test_device_get_linup(c_char_p, byref, device, hdhomerun_lib):
     ref = mock.MagicMock()
     byref.return_value = ref
@@ -202,7 +202,7 @@ def test_device_get_linup(c_char_p, byref, device, hdhomerun_lib):
 
 
 def test_device_get_valid(device, hdhomerun_lib):
-    with mock.patch("glowstick.hdhomerun.api.c_char_p") as c_char_p:
+    with mock.patch("libhdhomerun.api.c_char_p") as c_char_p:
         instance = c_char_p.return_value
         type(instance).value = mock.PropertyMock(side_effect=[None, b"Test"])
         resp = device.get(b"/sys/copyright")
@@ -212,8 +212,8 @@ def test_device_get_valid(device, hdhomerun_lib):
 
 
 def test_device_get_invalid(device, hdhomerun_lib):
-    from glowstick.hdhomerun.exceptions import DeviceError
-    with mock.patch("glowstick.hdhomerun.api.c_char_p") as c_char_p:
+    from libhdhomerun.exceptions import DeviceError
+    with mock.patch("libhdhomerun.api.c_char_p") as c_char_p:
         instance = c_char_p.return_value
         type(instance).value = mock.PropertyMock(side_effect=[b"Test", b"Test", None])
 
@@ -224,7 +224,7 @@ def test_device_get_invalid(device, hdhomerun_lib):
 
 
 def test_get_devices(hdhomerun_lib, discover_device_mock):
-    from glowstick.hdhomerun.api import get_devices
+    from libhdhomerun.api import get_devices
     hdhomerun_lib.hdhomerun_discover_find_devices_custom.return_value = 1
     hdhomerun_lib.hdhomerun_discover_device_t.__mul__.return_value = mock.Mock(return_value=[discover_device_mock])
 
@@ -237,8 +237,8 @@ def test_get_devices(hdhomerun_lib, discover_device_mock):
 
 
 def test_get_devices_none_found(hdhomerun_lib):
-    from glowstick.hdhomerun.api import get_devices
-    from glowstick.hdhomerun.exceptions import NoDeviceError
+    from libhdhomerun.api import get_devices
+    from libhdhomerun.exceptions import NoDeviceError
     hdhomerun_lib.hdhomerun_discover_find_devices_custom.return_value = 0
 
     with pytest.raises(NoDeviceError):
@@ -247,8 +247,8 @@ def test_get_devices_none_found(hdhomerun_lib):
 
 
 def test_get_devices_error(discover_device_mock, hdhomerun_lib):
-    from glowstick.hdhomerun.api import get_devices
-    from glowstick.hdhomerun.exceptions import HomeRunError
+    from libhdhomerun.api import get_devices
+    from libhdhomerun.exceptions import HomeRunError
     hdhomerun_lib.hdhomerun_discover_find_devices_custom.return_value = -1
 
     with pytest.raises(HomeRunError):

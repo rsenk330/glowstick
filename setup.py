@@ -29,7 +29,13 @@ setup(
     install_requires=requirements,
     scripts=["bin/glowstick"],
     classifiers=[
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.3',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
 )

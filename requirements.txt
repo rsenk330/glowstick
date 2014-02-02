@@ -1,1 +1,12 @@
-six==1.5.2
+dj-database-url==0.2.2
+django==1.6.1
+django-dotenv==1.2
+django-extensions==1.3.3
+django-getenv==1.2
+djangorestframework==2.3.12
+django-sekizai==0.7
+south==0.8.4
+structlog==0.4.1
+
+# Python 3 support
+-e git://github.com/django-compressor/django-compressor/@6d56a388187cde18edbd5d5a5551baef6e5c9765#egg=django_compressor

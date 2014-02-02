@@ -1,0 +1,28 @@
+{% load compress %}
+{% load sekizai_tags %}
+{% load staticfiles %}
+
+{% addtoblock "css" %}<link href="{% static 'less/glowstick.less' %}" type="text/less" rel="stylesheet" media="screen">{% endaddtoblock %}
+
+{% addtoblock "head-js" %}<script type="text/javascript" src="{% static 'js/vendor/modernizr-2.6.2-respond-1.1.0.min.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/jquery-2.1.0.min.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/bootstrap-3.1.0.min.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/glowstick.js' %}"></script>{% endaddtoblock %}
+
+<!DOCTYPE html>
+<html class="no-js">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>Glowstick</title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width">
+
+		{% render_block "css" postprocessor "compressor.contrib.sekizai.compress" %}
+		{% render_block "head-js" %}
+	</head>
+	<body>
+		{% block content %}{% endblock %}
+		{% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
+	</body>
+</html>

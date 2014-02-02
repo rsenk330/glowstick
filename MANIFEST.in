@@ -1,2 +1,14 @@
-include README.md LICENSE requirements.txt
+include README.md LICENSE manage.py requirements.txt
+recursive-include bin *
+recursive-include libhdhomerun *
 recursive-include glowstick *
+recursive-include static *
+recursive-include templates *
+
+global-exclude __pycache__/*
+global-exclude *.so
+global-exclude *.pyd
+global-exclude *.pyc
+global-exclude *.swp
+global-exclude .git*
+global-exclude .DS_Store
