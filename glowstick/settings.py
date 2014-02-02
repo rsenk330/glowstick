@@ -15,7 +15,7 @@ SECRET_KEY = env("SECRET_KEY", "v37qcb%=)d4tj_b5v-gz-3#=w&h7x1)y*h@2j8l5-bitt$st
 ALLOWED_HOSTS = [host for host in env('ALLOWED_HOSTS', '').split(";") if env("ALLOWED_HOSTS")]
 
 # Define database settings in DATABASE_URL environemnt variable
-DATABASES = {'default': dj_database_url.config(default="sqlite://{0}".format(os.path.join(BASE_DIR, "db.sqlite")))}
+DATABASES = {'default': dj_database_url.config(default="sqlite:///{0}".format(os.path.join(BASE_DIR, "db.sqlite")))}
 CONN_MAX_AGE = env("CONN_MAX_AGE", 0)
 
 INSTALLED_APPS = (
@@ -26,6 +26,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # Internal Apps
+    'devices',
 
     # External Apps
     'compressor',
@@ -120,3 +121,14 @@ structlog.configure(
     wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
 )
+
+# django-rest-framework
+REST_FRAMEWORK = {
+    'DEFAULT_MODEL_SERIALIZER_CLASS': 'rest_framework.serializers.HyperlinkedModelSerializer',
+    'DEFAULT_PERMISSION_CLASSES': [
+        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
+REST_FRAMEWORK = {
+}

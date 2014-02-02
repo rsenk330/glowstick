@@ -8,11 +8,15 @@
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/jquery-2.1.0.min.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/lodash-2.4.1.min.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/angular-1.2.10.min.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/angular-route-1.2.10.min.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/angular-resource-1.2.10.min.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/bootstrap-3.1.0.min.js' %}"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/glowstick.js' %}"></script>{% endaddtoblock %}
+
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/app.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/home/controllers.js' %}"></script>{% endaddtoblock %}
 
 <!DOCTYPE html>
-<html class="no-js">
+<html lang="en" class="no-js" ng-app="glowstick">
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -26,5 +30,18 @@
 	<body>
 		{% block content %}{% endblock %}
 		{% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
+		<script>
+			PARTIALS_ROOT = "{% static "partials" %}";
+
+			// Add the CSRF Token
+			var app = angular.module('glowstick');
+			app.config(['$httpProvider', function($httpProvider) {
+				$httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token|escapejs }}';
+			}]);
+
+			app.constant('urls', {
+				devices: "{% url "devices-list" %}"
+			});
+		</script>
 	</body>
 </html>
