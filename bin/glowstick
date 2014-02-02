@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from glowstick.hdhomerun import get_devices
+from libhdhomerun import get_devices
 
 if __name__ == "__main__":
     devices = get_devices()
