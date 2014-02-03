@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from libhdhomerun import get_devices
 from .serializers import DeviceSerializer
 
 
-class Device(ModelViewSet):
+class Device(ReadOnlyModelViewSet):
     lookup_field = "id"
     serializer_class = DeviceSerializer
 

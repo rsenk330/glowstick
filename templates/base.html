@@ -10,9 +10,13 @@
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/angular-1.2.10.min.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/angular-route-1.2.10.min.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/angular-resource-1.2.10.min.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/ngprogress-lite-1.0.4.min.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/bootstrap-3.1.0.min.js' %}"></script>{% endaddtoblock %}
 
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/app.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/common/controllers.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/devices/controllers.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/devices/models.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/home/controllers.js' %}"></script>{% endaddtoblock %}
 
 <!DOCTYPE html>
@@ -28,7 +32,47 @@
 		{% render_block "head-js" %}
 	</head>
 	<body>
+		{% block header %}
+		<nav class="navbar navbar-default" role="navigation" ng-controller="NavigationController">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#!/">Glowstick</a>
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li><a href="#" ng-class="{active: isActive('/guide')}">Guide</a></li>
+						<li><a href="#" ng-class="{active: isActive('/recordings')}">Recordings</a></li>
+						<li class="dropdown" ng-class="{active: isChildActive('/devices')}">
+							<a href="" class="dropdown-toggle" data-toggle="dropdown">Devices <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="#">Action</a></li>
+								<li><a href="#">Another action</a></li>
+								<li><a href="#">Something else here</a></li>
+								<li class="divider"></li>
+								<li><a href="#">Separated link</a></li>
+								<li class="divider"></li>
+								<li><a href="#!/devices">View All</a></li>
+							</ul>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li ng-class="{active: isActive('/settings')}"><a href="#">Settings</a></li>
+					</ul>
+				</div><!-- /.navbar-collapse -->
+			</div><!-- /.container-fluid -->
+		</nav>
+		{% endblock %}
 		{% block content %}{% endblock %}
+
 		{% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
 		<script>
 			PARTIALS_ROOT = "{% static "partials" %}";
