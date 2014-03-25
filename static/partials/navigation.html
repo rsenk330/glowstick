@@ -1,0 +1,33 @@
+<nav class="navbar navbar-default" role="navigation">
+	<div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#!/">Glowstick</a>
+		</div>
+
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li ng-class="{active: isActive('/guide')}"><a href="#!/guide">Guide</a></li>
+				<li ng-class="{active: isActive('/recordings')}"><a href="#!/recordings">Recordings</a></li>
+				<li class="dropdown" ng-class="{active: isChildActive('/devices')}">
+					<a href="" class="dropdown-toggle" data-toggle="dropdown">Devices <b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li ng-repeat="device in devices"><a href="#!/devices/{{device.id}}">{{device.hw_model}} @ {{device.ip}}</a></li>
+						<li class="divider" ng_show="devices"></li>
+						<li><a href="#!/devices">View All</a></li>
+					</ul>
+				</li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li ng-class="{active: isActive('/settings')}"><a href="#!/settings">Settings</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</div><!-- /.container-fluid -->
+</nav>

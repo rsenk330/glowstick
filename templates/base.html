@@ -12,12 +12,15 @@
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/angular-resource-1.2.10.min.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/ngprogress-lite-1.0.4.min.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/bootstrap-3.1.0.min.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/video-4.4.3.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/vendor/videojs.chromecast-20140220.min.js' %}"></script>{% endaddtoblock %}
 
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/app.js' %}"></script>{% endaddtoblock %}
-{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/common/controllers.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/common/directives.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/devices/controllers.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/devices/models.js' %}"></script>{% endaddtoblock %}
 {% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/home/controllers.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script type="text/javascript" src="{% static 'js/home/directives.js' %}"></script>{% endaddtoblock %}
 
 <!DOCTYPE html>
 <html lang="en" class="no-js" ng-app="glowstick">
@@ -33,43 +36,14 @@
 	</head>
 	<body>
 		{% block header %}
-		<nav class="navbar navbar-default" role="navigation" ng-controller="NavigationController">
-			<div class="container-fluid">
-				<!-- Brand and toggle get grouped for better mobile display -->
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand" href="#!/">Glowstick</a>
-				</div>
-
-				<!-- Collect the nav links, forms, and other content for toggling -->
-				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-					<ul class="nav navbar-nav">
-						<li><a href="#!/guide" ng-class="{active: isActive('/guide')}">Guide</a></li>
-						<li><a href="#!/recordings" ng-class="{active: isActive('/recordings')}">Recordings</a></li>
-						<li class="dropdown" ng-class="{active: isChildActive('/devices')}">
-							<a href="" class="dropdown-toggle" data-toggle="dropdown">Devices <b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li class="divider"></li>
-								<li><a href="#!/devices">View All</a></li>
-							</ul>
-						</li>
-					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						<li ng-class="{active: isActive('/settings')}"><a href="#!/settings">Settings</a></li>
-					</ul>
-				</div><!-- /.navbar-collapse -->
-			</div><!-- /.container-fluid -->
-		</nav>
+		<navigation></navigation>
 		{% endblock %}
 		{% block content %}{% endblock %}
 
+		<script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
 		{% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
 		<script>
+			STATIC_ROOT = "{% static "" %}";
 			PARTIALS_ROOT = "{% static "partials" %}";
 
 			// Add the CSRF Token

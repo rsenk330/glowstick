@@ -10,17 +10,19 @@
     scope.device.$promise.then(function() {
       scope.device_loaded = true;
       progress.done();
+    }, function() {
+      scope.error = true;
+      progress.done();
     });
   }]);
 
   deviceControllers.controller('DeviceListController', ["$scope", "Device", "ngProgressLite", function(scope, Device, progress) {
     progress.start();
-    scope.devices = Device.query();
-    scope.devices.$promise.then(function() {
-      scope.devices_loaded = true;
+    Device.query().$promise.then(function(devices) {
+      scope.devices = devices;
       progress.done();
     }, function(data) {
-      scope.devices_loaded = true;
+      scope.devices = [];
       progress.done();
     });
   }]);

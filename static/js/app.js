@@ -1,6 +1,23 @@
 (function() {
   'use strict';
 
+  /**
+    * Define a `format()` function on String that works like python's string
+    * formatting.
+    *
+    * Example:
+    *
+    *    "hello {0} {1}".format(user.firstName, user.lastName);
+    **/
+  if (!String.prototype.format) {
+    String.prototype.format = function() {
+      var args = arguments;
+      return this.replace(/{(\d+)}/g, function(match, number) {
+        return typeof args[number] != 'undefined' ? args[number] : match;
+      });
+    };
+  }
+
   angular.module('HashBangURLs', []).config(['$locationProvider', function($location) {
     $location.hashPrefix('!');
   }]);
@@ -10,10 +27,11 @@
     'ngResource',
     'ngProgressLite',
     'HashBangURLs',
-    'common.controllers',
+    'common.directives',
     'devices.controllers',
     'devices.models',
-    'home.controllers'
+    'home.controllers',
+    'home.directives'
     ]).config(['$routeProvider', function($routeProvider) {
       $routeProvider.when('/', {templateUrl: PARTIALS_ROOT + '/home.html', controller: 'HomeController'});
       $routeProvider.when('/devices', {templateUrl: PARTIALS_ROOT + '/devices.html', controller: 'DeviceListController'});

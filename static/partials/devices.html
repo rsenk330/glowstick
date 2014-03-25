@@ -1,5 +1,6 @@
 <h1>Devices</h1>
-<div ng-hide="devices_loaded">Loading...</div>
-<ul ng-repeat="device in devices">
-	<li><a href="#!/devices/{{device.id}}">{{device.hw_model}} @ {{device.ip}}</a></li>
+<div ng-show="!devices">Loading...</div>
+<ul>
+	<li ng-repeat="device in devices"><a href="#!/devices/{{device.id}}">{{device.hw_model}} @ {{device.ip}}</a></li>
 </ul>
+<div ng-show="devices && !devices.length">No devices found</div>
